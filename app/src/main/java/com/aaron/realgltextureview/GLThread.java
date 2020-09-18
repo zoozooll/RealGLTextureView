@@ -21,7 +21,34 @@ import javax.microedition.khronos.opengles.GL10;
 class GLThread extends Thread {
     private static final String TAG = "GLThread";
 
-    GLThread(WeakReference<GLSurfaceView> glSurfaceViewWeakRef) {
+    // Once the thread is started, all accesses to the following member
+    // variables are protected by the sGLThreadManager monitor
+    private boolean mShouldExit;
+    boolean mExited;
+    private boolean mRequestPaused;
+    private boolean mPaused;
+    private boolean mHasSurface;
+    private boolean mSurfaceIsBad;
+    private boolean mWaitingForSurface;
+    private boolean mHaveEglContext;
+    private boolean mHaveEglSurface;
+    private boolean mFinishedCreatingEglSurface;
+    private boolean mShouldReleaseEglContext;
+    private int mWidth;
+    private int mHeight;
+    private int mRenderMode;
+    private boolean mRequestRender;
+    private boolean mWantRenderNotification;
+    private boolean mRenderComplete;
+    private ArrayList<Runnable> mEventQueue = new ArrayList<Runnable>();
+    private boolean mSizeChanged = true;
+    private Runnable mFinishDrawingRunnable = null;
+    // End of member variables protected by the sGLThreadManager monitor.
+    private EglHelper mEglHelper;
+    private WeakReference<? extends  IGLView> mGLSurfaceViewWeakRef;
+    private static final GLThreadManager sGLThreadManager = new GLThreadManager();
+
+    GLThread(WeakReference<? extends  IGLView> glSurfaceViewWeakRef) {
         super();
         mWidth = 0;
         mHeight = 0;
@@ -129,9 +156,9 @@ class GLThread extends Thread {
                         }
                         // When pausing, optionally release the EGL Context:
                         if (pausing && mHaveEglContext) {
-                            GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+                            IGLView view = mGLSurfaceViewWeakRef.get();
                             boolean preserveEglContextOnPause = view == null ?
-                                    false : view.mPreserveEGLContextOnPause;
+                                    false : view.isPreserveEGLContextOnPause();
                             if (!preserveEglContextOnPause) {
                                 stopEglContextLocked();
                                 if (GLConstant.LOG_SURFACE) {
@@ -276,10 +303,10 @@ class GLThread extends Thread {
                     if (GLConstant.LOG_RENDERER) {
                         Log.w("GLThread", "onSurfaceCreated");
                     }
-                    GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+                    IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.mRenderer.onSurfaceCreated(gl, mEglHelper.mEglConfig);
+                            view.getRenderer().onSurfaceCreated(gl, mEglHelper.mEglConfig);
                         } finally {
                         }
                     }
@@ -289,10 +316,10 @@ class GLThread extends Thread {
                     if (GLConstant.LOG_RENDERER) {
                         Log.w("GLThread", "onSurfaceChanged(" + w + ", " + h + ")");
                     }
-                    GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+                    IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.mRenderer.onSurfaceChanged(gl, w, h);
+                            view.getRenderer().onSurfaceChanged(gl, w, h);
                         } finally {
                         }
                     }
@@ -302,10 +329,10 @@ class GLThread extends Thread {
                     Log.w("GLThread", "onDrawFrame tid=" + getId());
                 }
                 {
-                    GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+                    IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.mRenderer.onDrawFrame(gl);
+                            view.getRenderer().onDrawFrame(gl);
                             if (finishDrawingRunnable != null) {
                                 finishDrawingRunnable.run();
                                 finishDrawingRunnable = null;
@@ -532,35 +559,5 @@ class GLThread extends Thread {
             sGLThreadManager.notifyAll();
         }
     }
-    // Once the thread is started, all accesses to the following member
-    // variables are protected by the sGLThreadManager monitor
-    private boolean mShouldExit;
-    boolean mExited;
-    private boolean mRequestPaused;
-    private boolean mPaused;
-    private boolean mHasSurface;
-    private boolean mSurfaceIsBad;
-    private boolean mWaitingForSurface;
-    private boolean mHaveEglContext;
-    private boolean mHaveEglSurface;
-    private boolean mFinishedCreatingEglSurface;
-    private boolean mShouldReleaseEglContext;
-    private int mWidth;
-    private int mHeight;
-    private int mRenderMode;
-    private boolean mRequestRender;
-    private boolean mWantRenderNotification;
-    private boolean mRenderComplete;
-    private ArrayList<Runnable> mEventQueue = new ArrayList<Runnable>();
-    private boolean mSizeChanged = true;
-    private Runnable mFinishDrawingRunnable = null;
-    // End of member variables protected by the sGLThreadManager monitor.
-    private EglHelper mEglHelper;
-    /**
-     * Set once at thread construction time, nulled out when the parent view is garbage
-     * called. This weak reference allows the GLSurfaceView to be garbage collected while
-     * the GLThread is still alive.
-     */
-    private WeakReference<GLSurfaceView> mGLSurfaceViewWeakRef;
-    private static final GLThreadManager sGLThreadManager = new GLThreadManager();
+
 }

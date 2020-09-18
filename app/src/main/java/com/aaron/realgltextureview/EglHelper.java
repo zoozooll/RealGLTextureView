@@ -17,7 +17,15 @@ import javax.microedition.khronos.opengles.GL;
  * An EGL helper class.
  */
 class EglHelper {
-    public EglHelper(WeakReference<GLSurfaceView> glSurfaceViewWeakRef) {
+
+    private WeakReference<? extends IGLView> mGLSurfaceViewWeakRef;
+    EGL10 mEgl;
+    EGLDisplay mEglDisplay;
+    EGLSurface mEglSurface;
+    EGLConfig mEglConfig;
+    EGLContext mEglContext;
+
+    public EglHelper(WeakReference<? extends IGLView> glSurfaceViewWeakRef) {
         mGLSurfaceViewWeakRef = glSurfaceViewWeakRef;
     }
     /**
@@ -45,18 +53,18 @@ class EglHelper {
         if(!mEgl.eglInitialize(mEglDisplay, version)) {
             throw new RuntimeException("eglInitialize failed");
         }
-        GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+        IGLView view = mGLSurfaceViewWeakRef.get();
         if (view == null) {
             mEglConfig = null;
             mEglContext = null;
         } else {
-            mEglConfig = view.mEGLConfigChooser.chooseConfig(mEgl, mEglDisplay);
+            mEglConfig = view.getEGLConfigChooser().chooseConfig(mEgl, mEglDisplay);
             /*
              * Create an EGL context. We want to do this as rarely as we can, because an
              * EGL context is a somewhat heavy object.
              */
-            int eglContextVersion = view.mEGLContextClientVersion;
-            mEglContext = view.mEGLContextFactory.createContext(mEgl, mEglDisplay, mEglConfig, eglContextVersion);
+            int eglContextVersion = view.getEGLContextClientVersion();
+            mEglContext = view.getEGLContextFactory().createContext(mEgl, mEglDisplay, mEglConfig, eglContextVersion);
         }
         if (mEglContext == null || mEglContext == EGL10.EGL_NO_CONTEXT) {
             mEglContext = null;
@@ -97,10 +105,10 @@ class EglHelper {
         /*
          * Create an EGL surface we can render into.
          */
-        GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+        IGLView view = mGLSurfaceViewWeakRef.get();
         if (view != null) {
-            mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
-                    mEglDisplay, mEglConfig, view.getHolder());
+            mEglSurface = view.getEGLWindowSurfaceFactory().createWindowSurface(mEgl,
+                    mEglDisplay, mEglConfig, view.getSurfaceObject());
         } else {
             mEglSurface = null;
         }
@@ -131,18 +139,18 @@ class EglHelper {
      */
     GL createGL() {
         GL gl = mEglContext.getGL();
-        GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+        IGLView view = mGLSurfaceViewWeakRef.get();
         if (view != null) {
-            if (view.mGLWrapper != null) {
-                gl = view.mGLWrapper.wrap(gl);
+            if (view.getGLWrapper() != null) {
+                gl = view.getGLWrapper().wrap(gl);
             }
-            if ((view.mDebugFlags & (GLConstant.DEBUG_CHECK_GL_ERROR | GLConstant.DEBUG_LOG_GL_CALLS)) != 0) {
+            if ((view.getDebugFlags() & (GLConstant.DEBUG_CHECK_GL_ERROR | GLConstant.DEBUG_LOG_GL_CALLS)) != 0) {
                 int configFlags = 0;
                 Writer log = null;
-                if ((view.mDebugFlags & GLConstant.DEBUG_CHECK_GL_ERROR) != 0) {
+                if ((view.getDebugFlags() & GLConstant.DEBUG_CHECK_GL_ERROR) != 0) {
                     configFlags |= GLDebugHelper.CONFIG_CHECK_GL_ERROR;
                 }
-                if ((view.mDebugFlags & GLConstant.DEBUG_LOG_GL_CALLS) != 0) {
+                if ((view.getDebugFlags() & GLConstant.DEBUG_LOG_GL_CALLS) != 0) {
                     log = new LogWriter();
                 }
                 gl = GLDebugHelper.wrap(gl, configFlags, log);
@@ -171,9 +179,9 @@ class EglHelper {
             mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_CONTEXT);
-            GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+            IGLView view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
-                view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
+                view.getEGLWindowSurfaceFactory().destroySurface(mEgl, mEglDisplay, mEglSurface);
             }
             mEglSurface = null;
         }
@@ -183,9 +191,9 @@ class EglHelper {
             Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
         }
         if (mEglContext != null) {
-            GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+            IGLView view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
-                view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
+                view.getEGLContextFactory().destroyContext(mEgl, mEglDisplay, mEglContext);
             }
             mEglContext = null;
         }
@@ -211,10 +219,5 @@ class EglHelper {
     public static String formatEglError(String function, int error) {
         return function + " failed: " + EGLLogWrapper.getErrorString(error);
     }
-    private WeakReference<GLSurfaceView> mGLSurfaceViewWeakRef;
-    EGL10 mEgl;
-    EGLDisplay mEglDisplay;
-    EGLSurface mEglSurface;
-    EGLConfig mEglConfig;
-    EGLContext mEglContext;
+
 }
