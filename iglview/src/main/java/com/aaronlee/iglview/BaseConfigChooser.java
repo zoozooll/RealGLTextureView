@@ -1,4 +1,4 @@
-package com.aaron.realgltextureview;
+package com.aaronlee.iglview;
 
 import android.opengl.EGL14;
 import android.opengl.EGLExt;

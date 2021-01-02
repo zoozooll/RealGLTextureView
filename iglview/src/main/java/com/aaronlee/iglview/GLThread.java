@@ -1,4 +1,4 @@
-package com.aaron.realgltextureview;
+package com.aaronlee.iglview;
 
 import android.util.Log;
 
@@ -157,8 +157,7 @@ class GLThread extends Thread {
                         // When pausing, optionally release the EGL Context:
                         if (pausing && mHaveEglContext) {
                             IGLView view = mGLSurfaceViewWeakRef.get();
-                            boolean preserveEglContextOnPause = view == null ?
-                                    false : view.isPreserveEGLContextOnPause();
+                            boolean preserveEglContextOnPause = view != null && view.isPreserveEGLContextOnPause();
                             if (!preserveEglContextOnPause) {
                                 stopEglContextLocked();
                                 if (GLConstant.LOG_SURFACE) {

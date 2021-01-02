@@ -1,4 +1,4 @@
-package com.aaron.realgltextureview;
+package com.aaronlee.iglview;
 
 public class GLTextureView implements IGLView {
     @Override

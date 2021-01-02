@@ -1,4 +1,4 @@
-package com.aaron.realgltextureview;
+package com.aaronlee.iglview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,11 +8,20 @@ import android.view.SurfaceView;
 
 import java.lang.ref.WeakReference;
 
-import javax.microedition.khronos.opengles.GL;
-
 
 public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback2, IGLView {
     private final static String TAG = "GLSurfaceView";
+    private final WeakReference<GLSurfaceView> mThisWeakRef = new WeakReference<GLSurfaceView>(this);
+    private GLThread mGLThread;
+    private Renderer mRenderer;
+    private boolean mDetached;
+    private EGLConfigChooser mEGLConfigChooser;
+    private EGLContextFactory mEGLContextFactory;
+    private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+    private GLWrapper mGLWrapper;
+    private int mDebugFlags;
+    private int mEGLContextClientVersion;
+    private boolean mPreserveEGLContextOnPause;
 
     public GLSurfaceView(Context context) {
         super(context);
@@ -56,27 +65,27 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public int getEGLContextClientVersion() {
-        return 0;
+        return mEGLContextClientVersion;
     }
 
     @Override
     public EGLContextFactory getEGLContextFactory() {
-        return null;
+        return mEGLContextFactory;
     }
 
     @Override
     public EGLWindowSurfaceFactory getEGLWindowSurfaceFactory() {
-        return null;
+        return mEGLWindowSurfaceFactory;
     }
 
     @Override
     public Object getSurfaceObject() {
-        return null;
+        return getHolder();
     }
 
     @Override
     public GLWrapper getGLWrapper() {
-        return null;
+        return mGLWrapper;
     }
 
     public int getDebugFlags() {
@@ -85,12 +94,12 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public boolean isPreserveEGLContextOnPause() {
-        return false;
+        return mPreserveEGLContextOnPause;
     }
 
     @Override
     public Renderer getRenderer() {
-        return null;
+        return mRenderer;
     }
 
     public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
@@ -237,15 +246,5 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    private final WeakReference<GLSurfaceView> mThisWeakRef = new WeakReference<GLSurfaceView>(this);
-    private GLThread mGLThread;
-    private Renderer mRenderer;
-    private boolean mDetached;
-    private EGLConfigChooser mEGLConfigChooser;
-    private EGLContextFactory mEGLContextFactory;
-    private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
-    private GLWrapper mGLWrapper;
-    private int mDebugFlags;
-    private int mEGLContextClientVersion;
-    private boolean mPreserveEGLContextOnPause;
+
 }
