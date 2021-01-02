@@ -14,6 +14,7 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
         mEGLContextClientVersion = eglContextClientVersion;
         mConfigSpec = filterConfigSpec(configSpec);
     }
+
     public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
         int[] num_config = new int[1];
         if (!egl.eglChooseConfig(display, mConfigSpec, null, 0,
@@ -36,9 +37,12 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
         }
         return config;
     }
+
     abstract EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
                                     EGLConfig[] configs);
+
     protected int[] mConfigSpec;
+
     private int[] filterConfigSpec(int[] configSpec) {
         if (mEGLContextClientVersion != 2 && mEGLContextClientVersion != 3) {
             return configSpec;
@@ -48,14 +52,14 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
          */
         int len = configSpec.length;
         int[] newConfigSpec = new int[len + 2];
-        System.arraycopy(configSpec, 0, newConfigSpec, 0, len-1);
-        newConfigSpec[len-1] = EGL10.EGL_RENDERABLE_TYPE;
+        System.arraycopy(configSpec, 0, newConfigSpec, 0, len - 1);
+        newConfigSpec[len - 1] = EGL10.EGL_RENDERABLE_TYPE;
         if (mEGLContextClientVersion == 2) {
             newConfigSpec[len] = EGL14.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
         } else {
             newConfigSpec[len] = EGLExt.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
         }
-        newConfigSpec[len+1] = EGL10.EGL_NONE;
+        newConfigSpec[len + 1] = EGL10.EGL_NONE;
         return newConfigSpec;
     }
 }

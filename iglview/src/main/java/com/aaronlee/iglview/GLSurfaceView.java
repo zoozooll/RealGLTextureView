@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference;
 
 public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback2, IGLView {
     private final static String TAG = "GLSurfaceView";
-    private final WeakReference<GLSurfaceView> mThisWeakRef = new WeakReference<GLSurfaceView>(this);
+    private final WeakReference<? extends IGLView> mThisWeakRef = new WeakReference<>(this);
     private GLThread mGLThread;
     private Renderer mRenderer;
     private boolean mDetached;
@@ -104,10 +104,6 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
         mPreserveEGLContextOnPause = preserveOnPause;
-    }
-
-    public boolean getPreserveEGLContextOnPause() {
-        return mPreserveEGLContextOnPause;
     }
 
     public void setRenderer(Renderer renderer) {

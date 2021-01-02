@@ -1,6 +1,6 @@
 package com.aaronlee.iglview;
 
-class GLConstant {
+public class GLConstant {
     
     public final static int RENDERMODE_WHEN_DIRTY = 0;
 
