@@ -47,7 +47,6 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private void init() {
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
-
     }
 
     public void setGLWrapper(GLWrapper glWrapper) {
@@ -241,6 +240,4 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                     "setRenderer has already been called for this instance.");
         }
     }
-
-
 }
