@@ -1,11 +1,9 @@
 package com.aaronlee.iglview;
 
 import android.opengl.EGL14;
+import android.opengl.EGLConfig;
+import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
 
 abstract class BaseConfigChooser implements EGLConfigChooser {
     protected int mEGLContextClientVersion;
@@ -15,10 +13,10 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
         mConfigSpec = filterConfigSpec(configSpec);
     }
 
-    public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+    public EGLConfig chooseConfig(EGLDisplay display) {
         int[] num_config = new int[1];
-        if (!egl.eglChooseConfig(display, mConfigSpec, null, 0,
-                num_config)) {
+        if (!EGL14.eglChooseConfig(display, mConfigSpec, 0, null, 0,0,
+                num_config, 0)) {
             throw new IllegalArgumentException("eglChooseConfig failed");
         }
         int numConfigs = num_config[0];
@@ -27,18 +25,18 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
                     "No configs match configSpec");
         }
         EGLConfig[] configs = new EGLConfig[numConfigs];
-        if (!egl.eglChooseConfig(display, mConfigSpec, configs, numConfigs,
-                num_config)) {
+        if (!EGL14.eglChooseConfig(display, mConfigSpec, 0,  configs, 0, numConfigs,
+                num_config, 0)) {
             throw new IllegalArgumentException("eglChooseConfig#2 failed");
         }
-        EGLConfig config = chooseConfig(egl, display, configs);
+        EGLConfig config = chooseConfig(display, configs);
         if (config == null) {
             throw new IllegalArgumentException("No config chosen");
         }
         return config;
     }
 
-    abstract EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
+    abstract EGLConfig chooseConfig(EGLDisplay display,
                                     EGLConfig[] configs);
 
     protected int[] mConfigSpec;
@@ -53,13 +51,13 @@ abstract class BaseConfigChooser implements EGLConfigChooser {
         int len = configSpec.length;
         int[] newConfigSpec = new int[len + 2];
         System.arraycopy(configSpec, 0, newConfigSpec, 0, len - 1);
-        newConfigSpec[len - 1] = EGL10.EGL_RENDERABLE_TYPE;
+        newConfigSpec[len - 1] = EGL14.EGL_RENDERABLE_TYPE;
         if (mEGLContextClientVersion == 2) {
             newConfigSpec[len] = EGL14.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
         } else {
             newConfigSpec[len] = EGLExt.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
         }
-        newConfigSpec[len + 1] = EGL10.EGL_NONE;
+        newConfigSpec[len + 1] = EGL14.EGL_NONE;
         return newConfigSpec;
     }
 }

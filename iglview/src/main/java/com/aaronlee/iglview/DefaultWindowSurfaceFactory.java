@@ -1,20 +1,19 @@
 package com.aaronlee.iglview;
 
+import android.opengl.EGL14;
+import android.opengl.EGLConfig;
+import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
 import android.util.Log;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
 
 class DefaultWindowSurfaceFactory implements EGLWindowSurfaceFactory {
     private static final String TAG = "DefaultSurfaceFactory";
 
-    public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display,
+    public EGLSurface createWindowSurface(EGLDisplay display,
                                           EGLConfig config, Object nativeWindow) {
         EGLSurface result = null;
         try {
-            result = egl.eglCreateWindowSurface(display, config, nativeWindow, null);
+            result = EGL14.eglCreateWindowSurface(display, config, nativeWindow, null, 0);
         } catch (IllegalArgumentException e) {
             // This exception indicates that the surface flinger surface
             // is not valid. This can happen if the surface flinger surface has
@@ -26,8 +25,8 @@ class DefaultWindowSurfaceFactory implements EGLWindowSurfaceFactory {
         }
         return result;
     }
-    public void destroySurface(EGL10 egl, EGLDisplay display,
+    public void destroySurface(EGLDisplay display,
                                EGLSurface surface) {
-        egl.eglDestroySurface(display, surface);
+        EGL14.eglDestroySurface(display, surface);
     }
 }

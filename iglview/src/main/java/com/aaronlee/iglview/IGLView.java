@@ -2,8 +2,6 @@ package com.aaronlee.iglview;
 
 public interface IGLView {
 
-    void setGLWrapper(GLWrapper glWrapper);
-
     void setDebugFlags(int debugFlags);
 
     void setPreserveEGLContextOnPause(boolean preserveOnPause);
@@ -44,8 +42,6 @@ public interface IGLView {
     EGLWindowSurfaceFactory getEGLWindowSurfaceFactory();
 
     Object getSurfaceObject();
-
-    GLWrapper getGLWrapper();
 
     int getDebugFlags();
 

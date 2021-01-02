@@ -20,7 +20,6 @@ public class GLTextureView extends TextureView implements IGLView, TextureView.S
     private EGLConfigChooser mEGLConfigChooser;
     private EGLContextFactory mEGLContextFactory;
     private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
-    private GLWrapper mGLWrapper;
     private int mDebugFlags;
     private int mEGLContextClientVersion;
     private boolean mPreserveEGLContextOnPause;
@@ -50,10 +49,6 @@ public class GLTextureView extends TextureView implements IGLView, TextureView.S
         setSurfaceTextureListener(this);
     }
 
-    public void setGLWrapper(GLWrapper glWrapper) {
-        mGLWrapper = glWrapper;
-    }
-
     public void setDebugFlags(int debugFlags) {
         mDebugFlags = debugFlags;
     }
@@ -81,11 +76,6 @@ public class GLTextureView extends TextureView implements IGLView, TextureView.S
     @Override
     public Object getSurfaceObject() {
         return new Surface(getSurfaceTexture());
-    }
-
-    @Override
-    public GLWrapper getGLWrapper() {
-        return mGLWrapper;
     }
 
     public int getDebugFlags() {

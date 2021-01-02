@@ -1,7 +1,6 @@
 package com.aaronlee.iglview;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import android.opengl.EGLConfig;
 
 /**
  * A generic renderer interface.
@@ -33,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
  * the EGL context is lost, all OpenGL resources (such as textures) that are
  * associated with that context will be automatically deleted. In order to
  * keep rendering correctly, a renderer must recreate any lost resources
- * that it still needs. The {@link #onSurfaceCreated(GL10, EGLConfig)} method
+ * that it still needs. The {@link #onSurfaceCreated(EGLConfig)} method
  * is a convenient place to do this.
  *
  *
@@ -58,12 +57,10 @@ public interface Renderer {
      * the corresponding "glDelete" methods such as glDeleteTextures to
      * manually delete these lost resources.
      * <p>
-     * @param gl the GL interface. Use <code>instanceof</code> to
-     * test if the interface supports GL11 or higher interfaces.
      * @param config the EGLConfig of the created surface. Can be used
      * to create matching pbuffers.
      */
-    void onSurfaceCreated(GL10 gl, EGLConfig config);
+    void onSurfaceCreated(EGLConfig config);
     /**
      * Called when the surface changed size.
      * <p>
@@ -82,28 +79,18 @@ public interface Renderer {
      *     gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10);
      * }
      * </pre>
-     * @param gl the GL interface. Use <code>instanceof</code> to
-     * test if the interface supports GL11 or higher interfaces.
-     * @param width
-     * @param height
+     * @param width width of eglsurface
+     * @param height height of eglsurface
      */
-    void onSurfaceChanged(GL10 gl, int width, int height);
+    void onSurfaceChanged(int width, int height);
     /**
      * Called to draw the current frame.
      * <p>
      * This method is responsible for drawing the current frame.
      * <p>
-     * The implementation of this method typically looks like this:
-     * <pre class="prettyprint">
-     * void onDrawFrame(GL10 gl) {
-     *     gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-     *     //... other gl calls to render the scene ...
-     * }
-     * </pre>
-     * @param gl the GL interface. Use <code>instanceof</code> to
      * test if the interface supports GL11 or higher interfaces.
      */
-    void onDrawFrame(GL10 gl);
+    void onDrawFrame();
 
     void onSurfaceDestroy();
 }

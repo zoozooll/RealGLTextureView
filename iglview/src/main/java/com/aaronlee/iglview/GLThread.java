@@ -1,13 +1,12 @@
 package com.aaronlee.iglview;
 
+import android.opengl.EGL14;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGL11;
-import javax.microedition.khronos.opengles.GL10;
 
 /**
  * A generic GL Thread. Takes care of initializing EGL and GL. Delegates
@@ -98,10 +97,8 @@ class GLThread extends Thread {
         mHaveEglSurface = false;
         mWantRenderNotification = false;
         try {
-            GL10 gl = null;
             boolean createEglContext = false;
             boolean createEglSurface = false;
-            boolean createGlInterface = false;
             boolean lostEglContext = false;
             boolean sizeChanged = false;
             boolean wantRenderNotification = false;
@@ -219,7 +216,6 @@ class GLThread extends Thread {
                             if (mHaveEglContext && !mHaveEglSurface) {
                                 mHaveEglSurface = true;
                                 createEglSurface = true;
-                                createGlInterface = true;
                                 sizeChanged = true;
                             }
                             if (mHaveEglSurface) {
@@ -294,10 +290,6 @@ class GLThread extends Thread {
                     }
                     createEglSurface = false;
                 }
-                if (createGlInterface) {
-                    gl = (GL10) mEglHelper.createGL();
-                    createGlInterface = false;
-                }
                 if (createEglContext) {
                     if (GLConstant.LOG_RENDERER) {
                         Log.w("GLThread", "onSurfaceCreated");
@@ -305,7 +297,7 @@ class GLThread extends Thread {
                     IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.getRenderer().onSurfaceCreated(gl, mEglHelper.mEglConfig);
+                            view.getRenderer().onSurfaceCreated(mEglHelper.mEglConfig);
                         } finally {
                         }
                     }
@@ -318,7 +310,7 @@ class GLThread extends Thread {
                     IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.getRenderer().onSurfaceChanged(gl, w, h);
+                            view.getRenderer().onSurfaceChanged(w, h);
                         } finally {
                         }
                     }
@@ -331,7 +323,7 @@ class GLThread extends Thread {
                     IGLView view = mGLSurfaceViewWeakRef.get();
                     if (view != null) {
                         try {
-                            view.getRenderer().onDrawFrame(gl);
+                            view.getRenderer().onDrawFrame();
                             if (finishDrawingRunnable != null) {
                                 finishDrawingRunnable.run();
                                 finishDrawingRunnable = null;
@@ -342,9 +334,9 @@ class GLThread extends Thread {
                 }
                 int swapError = mEglHelper.swap();
                 switch (swapError) {
-                    case EGL10.EGL_SUCCESS:
+                    case EGL14.EGL_SUCCESS:
                         break;
-                    case EGL11.EGL_CONTEXT_LOST:
+                    case EGL14.EGL_CONTEXT_LOST:
                         if (GLConstant.LOG_SURFACE) {
                             Log.i("GLThread", "egl context lost tid=" + getId());
                         }

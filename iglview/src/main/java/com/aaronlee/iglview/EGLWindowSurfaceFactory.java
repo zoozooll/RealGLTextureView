@@ -1,9 +1,8 @@
 package com.aaronlee.iglview;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
+import android.opengl.EGLConfig;
+import android.opengl.EGLDisplay;
+import android.opengl.EGLSurface;
 
 /**
  * An interface for customizing the eglCreateWindowSurface and eglDestroySurface calls.
@@ -15,7 +14,7 @@ public interface EGLWindowSurfaceFactory {
     /**
      *  @return null if the surface cannot be constructed.
      */
-    EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
+    EGLSurface createWindowSurface(EGLDisplay display, EGLConfig config,
                                    Object nativeWindow);
-    void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface);
+    void destroySurface(EGLDisplay display, EGLSurface surface);
 }

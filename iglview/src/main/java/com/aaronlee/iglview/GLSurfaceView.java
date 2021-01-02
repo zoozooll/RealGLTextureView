@@ -18,7 +18,6 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private EGLConfigChooser mEGLConfigChooser;
     private EGLContextFactory mEGLContextFactory;
     private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
-    private GLWrapper mGLWrapper;
     private int mDebugFlags;
     private int mEGLContextClientVersion;
     private boolean mPreserveEGLContextOnPause;
@@ -49,10 +48,6 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         holder.addCallback(this);
     }
 
-    public void setGLWrapper(GLWrapper glWrapper) {
-        mGLWrapper = glWrapper;
-    }
-
     public void setDebugFlags(int debugFlags) {
         mDebugFlags = debugFlags;
     }
@@ -80,11 +75,6 @@ public class GLSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public Object getSurfaceObject() {
         return getHolder();
-    }
-
-    @Override
-    public GLWrapper getGLWrapper() {
-        return mGLWrapper;
     }
 
     public int getDebugFlags() {
