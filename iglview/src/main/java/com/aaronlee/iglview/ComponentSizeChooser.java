@@ -13,13 +13,13 @@ class ComponentSizeChooser extends BaseConfigChooser {
     public ComponentSizeChooser(int redSize, int greenSize, int blueSize,
                                 int alphaSize, int depthSize, int stencilSize, int eglContextVersion) {
         super(new int[] {
-                EGL10.EGL_RED_SIZE, redSize,
-                EGL10.EGL_GREEN_SIZE, greenSize,
-                EGL10.EGL_BLUE_SIZE, blueSize,
-                EGL10.EGL_ALPHA_SIZE, alphaSize,
-                EGL10.EGL_DEPTH_SIZE, depthSize,
-                EGL10.EGL_STENCIL_SIZE, stencilSize,
-                EGL10.EGL_NONE}, eglContextVersion);
+            EGL10.EGL_RED_SIZE, redSize,
+                    EGL10.EGL_GREEN_SIZE, greenSize,
+                    EGL10.EGL_BLUE_SIZE, blueSize,
+                    EGL10.EGL_ALPHA_SIZE, alphaSize,
+                    EGL10.EGL_DEPTH_SIZE, depthSize,
+                    EGL10.EGL_STENCIL_SIZE, stencilSize,
+                    EGL10.EGL_NONE}, eglContextVersion);
         mValue = new int[1];
         mRedSize = redSize;
         mGreenSize = greenSize;

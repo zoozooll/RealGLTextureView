@@ -3,13 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "30.0.0"
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.aaron.realgltextureview"
-        minSdkVersion 23
-        targetSdkVersion 29
+        minSdk 26
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -22,6 +21,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.aaron.realgltextureview'
 }
 
 dependencies {
